@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #div1 {
+            width: 100px;
+            height: 100px;
+            background: red;
+            position: absolute;
+        }
+        
+        #div2 {
+            width: 100px;
+            height: 100px;
+            background: hotpink;
+            position: absolute;
+            top: 200px;
+            left: 50px;
+        }
+    </style>
+    <script>
+        var z = 0;
+        /* 
+            
+        */
+    </script>
+</head>
+
+<body>
+    <div id="div1"></div>
+    <div id="div2"></div>
+    <script>
+        function Drag(id) {
+            this.disX = 0;
+            this.disY = 0;
+            this.elem = document.querySelector(id)
+        }
+
+        Drag.prototype.init = function() {
+            var This = this; //因为this经常发生改变，所以我们要让this尽量去指向这个对象
+            this.elem.onmousedown = function(ev) {
+                This.fnDown(ev);
+                document.onmousemove = function(ev) {
+                    This.fnMove(ev);
+                }
+                document.onmouseup = function() {
+                    This.fnUp();
+                }
+                return false; //防止默认行为
+            };
+        };
+
+        Drag.prototype.fnDown = function(ev) {
+            this.disX = ev.pageX - this.elem.offsetLeft;
+            this.disY = ev.pageY - this.elem.offsetTop;
+        };
+
+        Drag.prototype.fnMove = function(ev) {
+            this.elem.style.left = ev.pageX - this.disX + 'px';
+            this.elem.style.top = ev.pageY - this.disY + 'px';
+        };
+
+        Drag.prototype.fnUp = function() {
+            document.onmousemove = null;
+            document.onmouseup = null;
+        };
+
+        /* var d1 = new Drag('#div1');
+        d1.init();
+
+        var d2 = new Drag('#div2');
+        d2.init(); */
+
+        function ChildDrag(id) { //继承操作
+            Drag.call(this, id);
+        }
+
+        (function() {
+            var Super = function() {};
+            Super.prototype = Drag.prototype;
+            ChildDrag.prototype = new Super();
+        })()
+
+
+        /* extend(ChildDrag, Drag);
+
+        function extend(subs, sups) {
+            for (var attr in sups.prototype) {
+                subs.prototype[attr] = sups.prototype[attr];
+            }
+        } */
+
+        var d1 = new ChildDrag('#div1');
+        d1.init();
+        var d2 = new ChildDrag('#div2');
+        d2.init();
+    </script>
+</body>
+
+</html>
